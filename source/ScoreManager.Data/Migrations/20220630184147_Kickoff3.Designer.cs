@@ -10,13 +10,38 @@ using ScoreManager.Data;
 namespace ScoreManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220630150345_Kickoff")]
-    partial class Kickoff
+    [Migration("20220630184147_Kickoff3")]
+    partial class Kickoff3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.6");
+
+            modelBuilder.Entity("ScoreManager.Entities.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Category");
+                });
 
             modelBuilder.Entity("ScoreManager.Entities.User", b =>
                 {
@@ -32,11 +57,15 @@ namespace ScoreManager.Migrations
 
                     b.Property<string>("Login")
                         .IsRequired()
+                        .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("Login")
+                        .IsUnique();
+
+                    b.ToTable("User");
                 });
 #pragma warning restore 612, 618
         }

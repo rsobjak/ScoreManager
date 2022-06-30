@@ -5,7 +5,7 @@ namespace ScoreManager.Data
 {
     public class UserDAL : CrudBase<User>, IUser
     {
-        public UserDAL(ILogger<UserDAL> logger, ScoreManagerDbContext db) : base(logger, db)
+        public UserDAL(ILogger<UserDAL> logger, ApplicationDbContext db) : base(logger, db)
         {
         }
     }

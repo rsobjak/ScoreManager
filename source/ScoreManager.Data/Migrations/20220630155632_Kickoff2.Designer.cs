@@ -10,8 +10,8 @@ using ScoreManager.Data;
 namespace ScoreManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220630150345_Kickoff")]
-    partial class Kickoff
+    [Migration("20220630155632_Kickoff2")]
+    partial class Kickoff2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -1,16 +1,16 @@
-﻿using ScoreManager.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using ScoreManager.EntityConfiguration;
 
 namespace ScoreManager.Data
 {
-    public class ScoreManagerDbContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
         protected readonly IConfiguration Configuration;
         private readonly ILoggerFactory _loggerFactory;
 
-        public ScoreManagerDbContext(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public ApplicationDbContext(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
             _loggerFactory = loggerFactory;
@@ -22,6 +22,9 @@ namespace ScoreManager.Data
             options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
         }
 
-        public DbSet<User> Users { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserEntityTypeConfiguration).Assembly);
+        }
     }
 }

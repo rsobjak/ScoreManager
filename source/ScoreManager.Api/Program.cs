@@ -1,8 +1,9 @@
+using Microsoft.OpenApi.Models;
 using ScoreManager;
 using ScoreManager.Data;
-using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 try
 {
@@ -11,10 +12,22 @@ try
     builder.Host.UseSerilog(Log.Logger);
 
     // Add services to the container.
-    builder.Services.AddDbContext<ScoreManagerDbContext>();
-    builder.Services.AddTransient<IUser, UserDAL>();
+    builder.Services.AddDbContext<ApplicationDbContext>();
 
-    builder.Services.AddControllers();
+    var type = typeof(CrudBase<>);
+    var types2 = AppDomain.CurrentDomain.GetAssemblies()
+       .SelectMany(s => s.GetTypes())
+       .Where(p => p.FullName.Contains("ScoreManager") && p.Name.EndsWith("DAL"));
+    foreach (var t in types2)
+    {
+        var @interface = t.GetInterfaces().Single(w=> !w.Name.Contains("Base"));
+        builder.Services.AddTransient(@interface, t);
+    }
+
+    builder.Services.AddControllers()
+                    .AddJsonOptions(x =>
+                        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options =>
@@ -22,8 +35,8 @@ try
         options.SwaggerDoc("v1", new OpenApiInfo
         {
             Version = "v1",
-            Title = "Scorecard10 API",
-            Description = "An ASP.NET Core Web API for managing Scorecard data",
+            Title = "ScoreManager API",
+            Description = "An ASP.NET Core Web API for managing ScoreManager solution data",
             Contact = new OpenApiContact
             {
                 Name = "Developer",
@@ -45,7 +58,17 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(options =>
+        {
+            options.DisplayOperationId();
+            options.EnableTryItOutByDefault();
+            options.EnablePersistAuthorization();
+            options.EnableDeepLinking();
+            options.EnableValidator();
+            options.DisplayRequestDuration();
+            options.ShowExtensions();
+            options.ShowCommonExtensions();
+        });
     }
 
     app.UseHttpsRedirection();

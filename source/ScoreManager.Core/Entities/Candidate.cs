@@ -7,6 +7,5 @@
         public string? Document { get; set; }
         public string? Email { get; set; }
         public string? City { get; set; }
-        public Perform? Subscription { get; set; }
     }
 }
