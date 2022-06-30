@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<RootNamespace>ScoreManager</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ScoreManager.Core\ScoreManager.Core.csproj" />
+    <ProjectReference Include="..\ScoreManager.Data\ScoreManager.Data.csproj" />
+    <ProjectReference Include="..\ScoreManager.Kernel\ScoreManager.Kernel.csproj" />
+  </ItemGroup>
+
+</Project>
