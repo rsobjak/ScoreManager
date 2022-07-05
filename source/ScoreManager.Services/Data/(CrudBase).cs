@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ScoreManager.Data
 {
-    public class CrudBase<T> : ICrudBase<T> where T : Entity
+    public abstract class CrudBase<T> : ICrudBase<T> where T : Entity
 
     {
         protected DateTime time;

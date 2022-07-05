@@ -2,7 +2,7 @@
 
 namespace ScoreManager.Data
 {
-    public interface IPerform : ICrudBase<Perform>
+    public interface IPerformDAL : ICrudBase<Perform>
     {
     }
 }

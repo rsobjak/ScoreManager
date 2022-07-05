@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ScoreManager.Core\ScoreManager.Core.csproj" />
     <ProjectReference Include="..\ScoreManager.Data\ScoreManager.Data.csproj" />
     <ProjectReference Include="..\ScoreManager.Kernel\ScoreManager.Kernel.csproj" />

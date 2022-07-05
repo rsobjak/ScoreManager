@@ -6,5 +6,10 @@
         public virtual Candidate? PrimaryCandidate { get; set; }
         public virtual Candidate? SecondaryCandidate { get; set; }
         public decimal? Score { get; set; }
+        public int? Order { get; set; }
+        public string SongTitle { get; set; }
+        public string SongLyrics { get; set; }
+        public string MusicInterpreter { get; set; }
+        public virtual IEnumerable<Rating> Ratings { get; set; }
     }
 }

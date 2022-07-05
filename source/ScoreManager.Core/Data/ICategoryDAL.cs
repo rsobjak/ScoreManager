@@ -2,7 +2,7 @@
 
 namespace ScoreManager.Data
 {
-    public interface IRating : ICrudBase<Rating>
+    public interface ICategoryDAL : ICrudBase<Category>
     {
     }
 }

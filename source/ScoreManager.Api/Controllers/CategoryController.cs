@@ -8,7 +8,7 @@ namespace ScoreManager.Api.Controllers
     [Route("[controller]")]
     public class CategoryController : CrudBaseController<Category>
     {
-        public CategoryController(ILogger<CategoryController> logger, ICategory crud) : base(logger, crud)
+        public CategoryController(ILogger<CategoryController> logger, ICategoryDAL crud) : base(logger, crud)
         {
         }
     }

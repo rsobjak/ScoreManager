@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScoreManager.Data;
 
@@ -10,9 +11,10 @@ using ScoreManager.Data;
 namespace ScoreManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ScoreManagerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220703233426_Kickoff6")]
+    partial class Kickoff6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.6");
@@ -125,33 +127,6 @@ namespace ScoreManager.Migrations
                     b.ToTable("Perform");
                 });
 
-            modelBuilder.Entity("ScoreManager.Entities.Rating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("PerformId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal?>("Rate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PerformId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Rating");
-                });
-
             modelBuilder.Entity("ScoreManager.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -196,30 +171,6 @@ namespace ScoreManager.Migrations
                     b.Navigation("PrimaryCandidate");
 
                     b.Navigation("SecondaryCandidate");
-                });
-
-            modelBuilder.Entity("ScoreManager.Entities.Rating", b =>
-                {
-                    b.HasOne("ScoreManager.Entities.Perform", "Perform")
-                        .WithMany("Ratings")
-                        .HasForeignKey("PerformId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ScoreManager.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Perform");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ScoreManager.Entities.Perform", b =>
-                {
-                    b.Navigation("Ratings");
                 });
 #pragma warning restore 612, 618
         }

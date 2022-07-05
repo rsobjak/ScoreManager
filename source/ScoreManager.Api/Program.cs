@@ -1,6 +1,7 @@
 using Microsoft.OpenApi.Models;
 using ScoreManager;
 using ScoreManager.Data;
+using ScoreManager.Extensions;
 using Serilog;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -14,15 +15,7 @@ try
     // Add services to the container.
     builder.Services.AddDbContext<ApplicationDbContext>();
 
-    var type = typeof(CrudBase<>);
-    var types2 = AppDomain.CurrentDomain.GetAssemblies()
-       .SelectMany(s => s.GetTypes())
-       .Where(p => p.FullName.Contains("ScoreManager") && p.Name.EndsWith("DAL"));
-    foreach (var t in types2)
-    {
-        var @interface = t.GetInterfaces().Single(w=> !w.Name.Contains("Base"));
-        builder.Services.AddTransient(@interface, t);
-    }
+    builder.Services.ConfigureSelfBindableEntities();
 
     builder.Services.AddControllers()
                     .AddJsonOptions(x =>
@@ -68,6 +61,7 @@ try
             options.DisplayRequestDuration();
             options.ShowExtensions();
             options.ShowCommonExtensions();
+            options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
         });
     }
 

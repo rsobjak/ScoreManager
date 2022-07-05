@@ -4,9 +4,9 @@ using ScoreManager.Entities;
 
 namespace ScoreManager.Data
 {
-    public class PerformDAL : CrudBase<Perform>, IPerform
+    public class PerformDalService : CrudBase<Perform>, IPerformDAL
     {
-        public PerformDAL(ILogger<PerformDAL> logger, ApplicationDbContext db) : base(logger, db)
+        public PerformDalService(ILogger<PerformDalService> logger, ApplicationDbContext db) : base(logger, db)
         {
         }
 
@@ -21,7 +21,9 @@ namespace ScoreManager.Data
 
         public override async Task<Perform> GetByIdAsync(int id)
         {
-            return await getQuery().FirstOrDefaultAsync(w => w.Id == id);
+            return await getQuery()
+                .Include(s => s.Ratings)
+                .FirstAsync(w => w.Id == id);
         }
 
         private IQueryable<Perform> getQuery()

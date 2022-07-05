@@ -14,16 +14,24 @@ namespace ScoreManager.Data
         {
             Configuration = configuration;
             _loggerFactory = loggerFactory;
+
+            var pendings = this.Database.GetPendingMigrations();
+            if (pendings != null && pendings.Count() > 0)
+                this.Database.Migrate(); 
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
+            base.OnConfiguring(options);
             options.UseLoggerFactory(_loggerFactory);
             options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            options.EnableDetailedErrors();
+            options.EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserEntityTypeConfiguration).Assembly);
         }
     }

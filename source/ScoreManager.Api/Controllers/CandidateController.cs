@@ -8,7 +8,7 @@ namespace ScoreManager.Api.Controllers
     [Route("[controller]")]
     public class CandidateController : CrudBaseController<Candidate>
     {
-        public CandidateController(ILogger<CandidateController> logger, ICandidate dal) : base(logger, dal)
+        public CandidateController(ILogger<CandidateController> logger, ICandidateDAL dal) : base(logger, dal)
         {
         }
     }

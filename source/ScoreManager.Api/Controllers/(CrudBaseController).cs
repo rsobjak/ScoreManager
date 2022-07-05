@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ScoreManager.Api.Controllers
 {
@@ -52,14 +53,25 @@ namespace ScoreManager.Api.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [HttpPost(Name = "Add[controller]")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ObjectResult))]
         public async Task<IActionResult> Post(T entity)
         {
-            await _crud.InsertAsync(entity);
-            return Ok();
+            try
+            {
+                await _crud.InsertAsync(entity);
+                return CreatedAtAction(nameof(this.Get), new { id = entity.Id }, entity);
+            }
+            catch (DbUpdateException e)
+            {
+                var message = e.InnerException != null ? e.InnerException.Message : e.Message;
+                return BadRequest(message);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -74,8 +86,23 @@ namespace ScoreManager.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ObjectResult))]
         public async Task<IActionResult> Put(int id, T entity)
         {
-            await _crud.UpdateAsync(id, entity);
-            return Ok();
+            try
+            {
+                if (id != entity.Id)
+                    return BadRequest("Please specify 'id' parameter same 'entity.Id'");
+
+                await _crud.UpdateAsync(id, entity);
+                return Ok();
+            }
+            catch (DbUpdateException e)
+            {
+                var message = e.InnerException != null ? e.InnerException.Message : e.Message;
+                return BadRequest(message);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -89,8 +116,20 @@ namespace ScoreManager.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ObjectResult))]
         public async Task<IActionResult> Delete(int id)
         {
-            await _crud.RemoveAsync(id);
-            return Problem();
+            try
+            {
+                await _crud.RemoveAsync(id);
+                return Ok();
+            }
+            catch (DbUpdateException e)
+            {
+                var message = e.InnerException != null ? e.InnerException.Message : e.Message;
+                return BadRequest(message);
+            }
+            catch
+            {
+                throw;
+            }
         }
     }
 }

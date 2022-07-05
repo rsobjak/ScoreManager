@@ -8,8 +8,7 @@ namespace ScoreManager.Api.Controllers
     [Route("[controller]")]
     public class UserController : CrudBaseController<User>
     {
-
-        public UserController(ILogger<UserController> logger, IUser dal) : base(logger, dal)
+        public UserController(ILogger<UserController> logger, IUserDAL dal) : base(logger, dal)
         {
         }
     }
