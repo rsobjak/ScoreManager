@@ -91,7 +91,7 @@ namespace ScoreManager.Api.Controllers
                 if (id != entity.Id)
                     return BadRequest("Please specify 'id' parameter same 'entity.Id'");
 
-                await _crud.UpdateAsync(id, entity);
+                await _crud.UpdateAsync(entity);
                 return Ok();
             }
             catch (DbUpdateException e)

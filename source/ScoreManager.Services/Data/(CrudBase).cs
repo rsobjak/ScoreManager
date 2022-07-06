@@ -48,7 +48,7 @@ namespace ScoreManager.Data
             await _db.SaveChangesAsync();
         }
 
-        public virtual async Task UpdateAsync(int id, T entity)
+        public virtual async Task UpdateAsync(T entity)
         {
             _db.Set<T>().Update(entity);
             await _db.SaveChangesAsync();
