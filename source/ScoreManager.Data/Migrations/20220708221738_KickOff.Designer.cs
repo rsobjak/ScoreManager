@@ -11,8 +11,8 @@ using ScoreManager.Data;
 namespace ScoreManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220703233426_Kickoff6")]
-    partial class Kickoff6
+    [Migration("20220708221738_KickOff")]
+    partial class KickOff
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,18 +39,20 @@ namespace ScoreManager.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Document")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Candidate");
                 });
@@ -59,9 +61,6 @@ namespace ScoreManager.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -89,13 +88,6 @@ namespace ScoreManager.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("MusicInterpreter")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int?>("Order")
                         .HasColumnType("INTEGER");
 
@@ -108,13 +100,18 @@ namespace ScoreManager.Migrations
                     b.Property<int?>("SecondaryCandidateId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("SongInterpreter")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("SongLyrics")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SongTitle")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -127,13 +124,34 @@ namespace ScoreManager.Migrations
                     b.ToTable("Perform");
                 });
 
-            modelBuilder.Entity("ScoreManager.Entities.User", b =>
+            modelBuilder.Entity("ScoreManager.Entities.Rating", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<int>("PerformId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal?>("Rate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PerformId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Rating");
+                });
+
+            modelBuilder.Entity("ScoreManager.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsRater")
@@ -150,6 +168,17 @@ namespace ScoreManager.Migrations
                         .IsUnique();
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("ScoreManager.Entities.Candidate", b =>
+                {
+                    b.HasOne("ScoreManager.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ScoreManager.Entities.Perform", b =>
@@ -171,6 +200,30 @@ namespace ScoreManager.Migrations
                     b.Navigation("PrimaryCandidate");
 
                     b.Navigation("SecondaryCandidate");
+                });
+
+            modelBuilder.Entity("ScoreManager.Entities.Rating", b =>
+                {
+                    b.HasOne("ScoreManager.Entities.Perform", "Perform")
+                        .WithMany("Ratings")
+                        .HasForeignKey("PerformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ScoreManager.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Perform");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ScoreManager.Entities.Perform", b =>
+                {
+                    b.Navigation("Ratings");
                 });
 #pragma warning restore 612, 618
         }

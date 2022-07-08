@@ -1,13 +1,11 @@
-﻿namespace ScoreManager.Entities
+﻿namespace ScoreManager.Dto.Request
 {
-    public class Candidate : EntityBase
+    public class InsertCandidateDto
     {
-
         public string Name { get; set; }
         public string Document { get; set; }
         public string? Cellphone { get; set; }
         public string? Email { get; set; }
         public string? City { get; set; }
-        public virtual User User { get; set; }
     }
 }

@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ScoreManager.Core\ScoreManager.Core.csproj" />
     <ProjectReference Include="..\ScoreManager.Data\ScoreManager.Data.csproj" />
     <ProjectReference Include="..\ScoreManager.Kernel\ScoreManager.Kernel.csproj" />

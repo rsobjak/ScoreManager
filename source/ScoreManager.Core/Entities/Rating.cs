@@ -1,6 +1,6 @@
 ﻿namespace ScoreManager.Entities
 {
-    public class Rating : Entity
+    public class Rating : EntityBase
     {
         public User User { get; set; }
         public Perform Perform { get; set; }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,7 +6,8 @@ namespace ScoreManager.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public abstract class CrudBaseController<T> : ControllerBase where T : Entity
+    [Authorize]
+    public abstract class CrudBaseController<T> : ControllerBase where T : EntityBase
     {
         protected readonly ILogger<object> _logger;
         protected readonly ICrudBase<T> _crud;
@@ -56,7 +58,7 @@ namespace ScoreManager.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ObjectResult))]
-        public async Task<IActionResult> Post(T entity)
+        public async Task<ActionResult<T>> Post(T entity)
         {
             try
             {
@@ -84,7 +86,7 @@ namespace ScoreManager.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ObjectResult))]
-        public async Task<IActionResult> Put(int id, T entity)
+        public async Task<ActionResult<T>> Put(int id, T entity)
         {
             try
             {
@@ -114,6 +116,7 @@ namespace ScoreManager.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ObjectResult))]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try

@@ -18,9 +18,10 @@ try
 
     // Add services to the container.
     builder.Services.AddDbContext<ApplicationDbContext>();
-
+    builder.Services.AddHttpContextAccessor();
     builder.Services.ConfigureSelfBindableEntities();
     builder.Services.AddCors();
+    builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
     builder.Services.AddAuthentication(options =>
     {
@@ -51,14 +52,19 @@ try
          o.RequireHttpsMetadata = false;
          o.TokenValidationParameters = new TokenValidationParameters
          {
-             NameClaimType = ClaimTypes.Name,
+             NameClaimType = ClaimTypes.Email,
              RoleClaimType = ClaimTypes.Role,
          };
      });
 
     builder.Services.AddControllers()
                     .AddJsonOptions(x =>
-                        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+                    {
+                        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                        //x.JsonSerializerOptions.IgnoreNullValues = true;
+                    }
+                    );
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -92,7 +98,7 @@ try
                 }
             }
         });
-options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement()
             {
                 {
                     new OpenApiSecurityScheme
@@ -110,53 +116,53 @@ options.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 }
             });
 
-// using System.Reflection;
-var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+        // using System.Reflection;
+        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     });
 
-var app = builder.Build();
+    var app = builder.Build();
 
-app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseMiddleware<RequestSerilLogMiddleware>();
+    app.UseMiddleware<ErrorHandlingMiddleware>();
+    app.UseMiddleware<RequestSerilLogMiddleware>();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
     {
-        options.DisplayOperationId();
-        options.EnableTryItOutByDefault();
-        options.EnablePersistAuthorization();
-        options.EnableDeepLinking();
-        options.EnableValidator();
-        options.DisplayRequestDuration();
-        options.ShowExtensions();
-        options.ShowCommonExtensions();
-        options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            options.DisplayOperationId();
+            options.EnableTryItOutByDefault();
+            options.EnablePersistAuthorization();
+            options.EnableDeepLinking();
+            options.EnableValidator();
+            options.DisplayRequestDuration();
+            options.ShowExtensions();
+            options.ShowCommonExtensions();
+            options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
 
-        options.OAuthClientId(app.Configuration.GetValue<string>("OAuth2ClientId"));
-        options.OAuthClientSecret(app.Configuration.GetValue<string>("OAuth2ClientSecret"));
-        options.OAuthAppName(app.Configuration.GetValue<string>("OAuth2ClientId"));
+            options.OAuthClientId(app.Configuration.GetValue<string>("OAuth2ClientId"));
+            options.OAuthClientSecret(app.Configuration.GetValue<string>("OAuth2ClientSecret"));
+            options.OAuthAppName(app.Configuration.GetValue<string>("OAuth2ClientId"));
+        });
+    }
+
+    app.UseHttpsRedirection();
+
+    app.UseCors(x =>
+    {
+        x.AllowAnyMethod();
+        x.AllowAnyOrigin();
+        x.AllowAnyHeader();
     });
-}
 
-app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
 
-app.UseCors(x =>
-{
-    x.AllowAnyMethod();
-    x.AllowAnyOrigin();
-    x.AllowAnyHeader();
-});
+    app.MapControllers();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+    app.Run();
 }
 catch (Exception ex)
 {
