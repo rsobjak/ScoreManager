@@ -1,0 +1,61 @@
+﻿@page "/categories"
+
+@using ScoreManager.BlazorApp.Data
+
+<h1>Categorias</h1>
+
+<p>Categorias para apresentações</p>
+
+@if (categories == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p><label>@_scoreManagerClient.Username</label></p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Ordem</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in categories.OrderBy(x => x.Order))
+            {
+                <tr>
+                    <td>@category.Id</td>
+                    <td>@category.Name</td>
+                    <td>@category.Order</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Category> categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categories = await _scoreManagerClient.GetAllCategoryAsync();
+        }
+        catch (ApiException ex)
+        {
+            const string key = "WWW-Authenticate";
+            var header = ex.Headers.FirstOrDefault(w => w.Key == key);
+            if (header.Key == key)
+                await App.Current.MainPage.DisplayAlert("Auth Error", header.Value.FirstOrDefault(), "Ok");
+            else
+                await App.Current.MainPage.DisplayAlert("Error", ex.ToString(), "ok");
+        }
+        catch (Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlert("Error", ex.ToString(), "ok");
+        }
+    }
+
+}

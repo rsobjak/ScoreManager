@@ -1,0 +1,100 @@
+﻿@page "/performs"
+
+@using ScoreManager.BlazorApp.Data
+
+@inject NavigationManager NavigationManager
+
+<h1>Apresentações</h1>
+
+<RadzenDropDown AllowClear="true" TValue="string" Class="w-100"
+                Data=@(categories)
+                SelectedItem=@(categorySelected)
+                TextProperty="Name"
+                Change=@(args => OnChange(args)) />
+
+@if (performs == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p><label>@_scoreManagerClient.Username</label></p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nomes</th>
+                <th>Música</th>
+                <th>Categoria</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var perform in filteredPerforms)
+            {
+                <tr @onclick="() => OnPerformClick(perform)">
+                    @if (!string.IsNullOrEmpty(perform.SecondaryCandidateName))
+                    {
+                        <td>
+                            @perform.PrimaryCandidateName
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @perform.PrimaryCandidateName / @perform.SecondaryCandidateName
+                        </td>
+                    }
+                    <td>@perform.SongTitle (@perform.SongInterpreter)</td>
+                    <td>@perform.Category</td>
+                    <td>@perform.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<PerformDto> performs;
+    private IEnumerable<PerformDto> filteredPerforms;
+    private IEnumerable<Category> categories;
+    private Category categorySelected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categories = await _scoreManagerClient.GetAllCategoryAsync();
+            performs = await _scoreManagerClient.GetPendingPerformAsync();
+            categorySelected = categories.FirstOrDefault();
+            OnChange(categorySelected);
+        }
+        catch (ApiException ex)
+        {
+            const string key = "WWW-Authenticate";
+            var header = ex.Headers.FirstOrDefault(w => w.Key == key);
+            if (header.Key == key)
+                await App.Current.MainPage.DisplayAlert("Auth Error", header.Value.FirstOrDefault(), "Ok");
+            else
+                await App.Current.MainPage.DisplayAlert("Error", ex.ToString(), "ok");
+        }
+        catch (Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlert("Error", ex.ToString(), "ok");
+        }
+    }
+
+    private async void OnPerformClick(PerformDto perform)
+    {
+        NavigationManager.NavigateTo($"/perform/{perform.Id}");
+    }
+    void OnChange(object name)
+    {
+        var categorySelected = name as Category;
+        this.categorySelected = categorySelected;
+        if (this.categorySelected == null)
+            filteredPerforms = performs;
+        else
+            filteredPerforms = performs.Where(w => w.Category == this.categorySelected.Name).ToList();
+    }
+}

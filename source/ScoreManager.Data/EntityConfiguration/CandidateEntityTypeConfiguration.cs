@@ -12,11 +12,13 @@ namespace ScoreManager.EntityConfiguration
             builder
                 .Property(b => b.Document)
                 .HasMaxLength(20)
+                .HasColumnType("nvarchar")
                 .IsRequired()
                 ;
             builder
                 .Property(b => b.Name)
                 .HasMaxLength(255)
+                .HasColumnType("nvarchar")
                 .IsRequired()
                 ;
             builder.HasIndex(b => b.Document).IsUnique();

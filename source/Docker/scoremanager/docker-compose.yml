@@ -1,6 +1,19 @@
 version: "3.2"
 
 services:
+    portainer:
+        image: portainer/portainer-ce:latest
+        container_name: portainer
+        restart: unless-stopped
+        security_opt:
+        - no-new-privileges:true
+        volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /var/run/docker.sock:/var/run/docker.sock:ro
+        - ./portainer-data:/data
+        ports:
+        - 9000:9000
+
     mssql:
         image: mcr.microsoft.com/mssql/server
         ports:
@@ -13,7 +26,7 @@ services:
         image: mcr.microsoft.com/mssql-tools
         depends_on:
             - mssql
-        command: /bin/bash -c 'until /opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P "Foo@bar123" -Q "create database Keycloak"; do sleep 5; done'
+        command: /bin/bash -c 'until /opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P "Foo@bar123" -Q "create database Keycloak; create database ScoreManager"; do sleep 5; done'
     keycloak:
         image: jboss/keycloak:16.1.1
         depends_on:
@@ -30,3 +43,48 @@ services:
             - DB_ADDR=mssql
             - DB_DATABASE=Keycloak
             - PROXY_ADDRESS_FORWARDING=true
+    
+    # scoremanager-mssql:
+    #     image: mcr.microsoft.com/mssql/server
+    #     ports:
+    #         - "1434:1433"
+    #     environment:
+    #         - ACCEPT_EULA=Y
+    #         - SA_PASSWORD=Foo@bar123
+    #         - MSSQL_PID=Developer
+    # scoremanager-mssqlscripts:
+    #     image: mcr.microsoft.com/mssql-tools
+    #     depends_on:
+    #         - scoremanager-mssql
+    #     command: /bin/bash -c 'until /opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P "Foo@bar123" -Q "create database ScoreManager"; do sleep 5; done'
+    scoremanager-api:
+        image: rodrigosobjak/scoremanagerapi:latest
+        depends_on:
+            - mssql
+            - mssqlscripts
+        ports:
+            - "8081:80"
+        environment:
+            - "ConnectionStrings:DefaultConnection=Data source=api-scoremanager.io,1433;Initial Catalog=ScoreManager;User=sa;Password=Foo@bar123"
+            - OAuth2ClientSecret=ZL1L0FuAs2wTMUK3tse5kTe3xtBSYLdS
+            - OAuth2ClientId=scoremanager
+            - OAuth2Authority=https://sso-scoremanager.io/auth/realms/scoremanager
+            - Kestrel:Certificates:Development:Password=93c4dbdd-ec65-41d7-b9db-c009b3e68d60
+    
+    nginx:
+        image: nginx:latest
+        depends_on:
+            - scoremanager-api
+        volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./nginx/sites-enabled/backend.conf:/etc/nginx/sites-enabled/backend.template
+        - ./nginx/ssl/dhparam.pem:/etc/nginx/ssl/dhparam.pem
+        - ./nginx/certs/scoremanager.io.pem:/etc/nginx/scoremanager.io.pem # New Line!
+        - ./nginx/certs/scoremanager.io-key.pem:/etc/nginx/scoremanager.io-key.pem # New Line!
+        ports:
+        - 80:80
+        - 443:443
+        environment:
+        - SITE_DOMAIN=scoremanager.io
+
+        command: /bin/bash -c "envsubst '$${SITE_DOMAIN}'< /etc/nginx/sites-enabled/backend.template > /etc/nginx/sites-enabled/backend.conf && exec nginx -g 'daemon off;'"

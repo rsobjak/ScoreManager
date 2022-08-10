@@ -1,0 +1,53 @@
+﻿@page "/"
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@if (isLoading)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    <p><label>Username: @_scoreManagerClient.Username</label></p>
+}
+
+<RadzenButton Text="Entrar" hidden="@_scoreManagerClient.IsAuthenticated()" Click="doLogin"></RadzenButton>
+<RadzenButton Text="Sair" hidden="@_scoreManagerClient.IsNotAuthenticated()" Click="doLogout"></RadzenButton>
+
+
+@code {
+    bool isLoading = false;
+
+    private async Task doLogin()
+    {
+        try
+        {
+            isLoading = true;
+            await _scoreManagerClient.LoginAsync();
+            isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlert("Error", ex.ToString(), "ok");
+            throw;
+        }
+    }
+    private async Task doLogout()
+    {
+        try
+        {
+            isLoading = true;
+            await _scoreManagerClient.LogoutAsync();
+            isLoading = false;
+        }
+        catch (Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlert("Error", ex.ToString(), "ok");
+            throw;
+        }
+    }
+}

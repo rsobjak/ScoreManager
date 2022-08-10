@@ -4,7 +4,7 @@
 
 namespace ScoreManager.Migrations
 {
-    public partial class KickOff : Migration
+    public partial class Kickoff : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,10 +12,10 @@ namespace ScoreManager.Migrations
                 name: "Category",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    Order = table.Column<int>(type: "INTEGER", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -26,10 +26,10 @@ namespace ScoreManager.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Login = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    IsRater = table.Column<bool>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Login = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    IsRater = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -40,14 +40,14 @@ namespace ScoreManager.Migrations
                 name: "Candidate",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
-                    Document = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    Cellphone = table.Column<string>(type: "TEXT", nullable: true),
-                    Email = table.Column<string>(type: "TEXT", nullable: true),
-                    City = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Document = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Cellphone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,17 +64,17 @@ namespace ScoreManager.Migrations
                 name: "Perform",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    CategoryId = table.Column<int>(type: "INTEGER", nullable: true),
-                    PrimaryCandidateId = table.Column<int>(type: "INTEGER", nullable: true),
-                    SecondaryCandidateId = table.Column<int>(type: "INTEGER", nullable: true),
-                    Score = table.Column<decimal>(type: "TEXT", nullable: true),
-                    Order = table.Column<int>(type: "INTEGER", nullable: true),
-                    SongTitle = table.Column<string>(type: "TEXT", nullable: false),
-                    SongLyrics = table.Column<string>(type: "TEXT", nullable: true),
-                    SongInterpreter = table.Column<string>(type: "TEXT", nullable: true),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    PrimaryCandidateId = table.Column<int>(type: "int", nullable: true),
+                    SecondaryCandidateId = table.Column<int>(type: "int", nullable: true),
+                    Score = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Order = table.Column<int>(type: "int", nullable: true),
+                    SongTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SongLyrics = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SongInterpreter = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -100,11 +100,11 @@ namespace ScoreManager.Migrations
                 name: "Rating",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    PerformId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Rate = table.Column<decimal>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    PerformId = table.Column<int>(type: "int", nullable: false),
+                    Rate = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
                 },
                 constraints: table =>
                 {

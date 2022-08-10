@@ -1,0 +1,91 @@
+﻿@page "/perform/{Id:int}"
+
+@using ScoreManager.BlazorApp.Data
+
+<h1>Apresentações</h1>
+
+
+@functions {
+    [Parameter]
+    public int Id { get; set; }
+}
+
+
+
+<h1>@Id</h1>
+@if (perform != null)
+{
+    <p>@perform.Category.Name</p>
+    <p>@perform.SongTitle</p>
+    <p>@perform.SongInterpreter</p>
+    <p>@perform.SongLyrics</p>
+    <p>@perform.PrimaryCandidate.Name</p>
+    <p>@perform.PrimaryCandidate.Document</p>
+    @*//<p>@perform.SecondaryCandidate.Name</p>
+//<p>@perform.SecondaryCandidate.Document</p>*@
+}
+
+
+<RadzenNumeric TValue="double?"
+               Format="0.00"
+               Max="10"
+               Min="5"
+               Step="0.01"
+               @bind-Value=@rate
+               Placeholder="Digite a nota (5 ~ 10)"
+               />
+
+<RadzenButton Click="SendRate" Text="Enviar Nota"></RadzenButton>
+
+@code {
+    private Perform perform;
+    private double? rate = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            perform = await _scoreManagerClient.GetPerformByIdAsync(Id);
+        }
+        catch (ApiException ex)
+        {
+            const string key = "WWW-Authenticate";
+            var header = ex.Headers.FirstOrDefault(w => w.Key == key);
+            if (header.Key == key)
+                await App.Current.MainPage.DisplayAlert("Auth Error", header.Value.FirstOrDefault(), "Ok");
+            else
+                await App.Current.MainPage.DisplayAlert("Error", ex.ToString(), "ok");
+        }
+        catch (Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlert("Error", ex.ToString(), "ok");
+        }
+    }
+
+    private async Task SendRate()
+    {
+        var result = await App.Current.MainPage.DisplayAlert("Confirmação",
+            $"Confirmar a nota '{rate}' para a apresentação da música '{perform.SongTitle}'?",
+            "Sim",
+            "Não"
+        );
+
+        if (result)
+        {
+            await _scoreManagerClient.AddRateAsync(new InsertRateDto
+                {
+                    PerformId = perform.Id,
+                    Rate = rate
+                });
+        }
+
+    }
+
+    async void OnChange(double? value)
+    {
+        await App.Current.MainPage.DisplayAlert("Confirmação",
+              value.HasValue ? value.ToString() : "null",
+              "Ok"
+          );
+    }
+}

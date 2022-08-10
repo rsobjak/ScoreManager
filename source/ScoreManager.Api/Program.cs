@@ -45,6 +45,7 @@ try
     //});
     .AddJwtBearer("Bearer", o =>
      {
+         o.BackchannelHttpHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = delegate { return true; } };
          o.Authority = oauthAuthority;
          o.Audience = builder.Configuration.GetValue<string>("OAuth2ClientId");
          o.SaveToken = true;
@@ -127,8 +128,8 @@ try
     app.UseMiddleware<RequestSerilLogMiddleware>();
 
     // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
+    //if (app.Environment.IsDevelopment())
+    //{
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
@@ -146,9 +147,9 @@ try
             options.OAuthClientSecret(app.Configuration.GetValue<string>("OAuth2ClientSecret"));
             options.OAuthAppName(app.Configuration.GetValue<string>("OAuth2ClientId"));
         });
-    }
+    //}
 
-    app.UseHttpsRedirection();
+    //app.UseHttpsRedirection();
 
     app.UseCors(x =>
     {

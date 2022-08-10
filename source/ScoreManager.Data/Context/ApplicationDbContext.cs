@@ -17,14 +17,14 @@ namespace ScoreManager.Data
 
             var pendings = this.Database.GetPendingMigrations();
             if (pendings != null && pendings.Count() > 0)
-                this.Database.Migrate(); 
+                this.Database.Migrate();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             base.OnConfiguring(options);
             options.UseLoggerFactory(_loggerFactory);
-            options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
         }
